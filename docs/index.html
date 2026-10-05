@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema de Gestion de Tareas con API y Base de Datos</title>
+<!--
+    GitHub Pages solo puede alojar archivos estaticos (HTML, CSS, JS), no
+    puede ejecutar un servidor Flask ni codigo Python. Por eso esta pagina
+    es solo documentacion: la API real (servidor.py) se tiene q correr
+    localmente en la propia computadora, siguiendo las instrucciones de
+    mas abajo. Las capturas se copian a docs/capturas/ para q se vean
+    tambien aca, en la pagina publicada.
+-->
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        line-height: 1.6;
+        color: #222;
+    }
+    h1, h2, h3 {
+        color: #1a1a2e;
+    }
+    .captura {
+        max-width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        margin: 10px 0;
+    }
+</style>
+</head>
+<body>
+
+<h1>Sistema de Gestion de Tareas con API y Base de Datos</h1>
+
+<h2>Descripcion</h2>
+<p>
+    API REST hecha con Flask que permite registrar usuarios, iniciar sesi on y
+    acceder a una pagina de bienvenida protegida con autenticaci on basica
+    (HTTP Basic Auth). Los usuarios persisten en una base de datos SQLite,
+    con las contraseñas guardadas como hash. Incluye un cliente de consola
+    que consume la API usando la libreria requests.
+</p>
+
+<h2>Requisitos</h2>
+<ul>
+    <li>Python 3</li>
+    <li>pip</li>
+</ul>
+
+<h2>Instalacion</h2>
+<ol>
+    <li>Clonar o descargar el repositorio.</li>
+    <li>Crear un entorno virtual:
+        <p>Windows: python -m venv venv</p>
+        <p>Linux/Mac: python3 -m venv venv</p>
+    </li>
+    <li>Activar el entorno virtual:
+        <p>Windows: venv\Scripts\activate</p>
+        <p>Linux/Mac: source venv/bin/activate</p>
+    </li>
+    <li>Instalar las dependencias:
+        <p>pip install -r requirements.txt</p>
+    </li>
+</ol>
+
+<h2>Como ejecutar</h2>
+<ol>
+    <li>En una terminal: python servidor.py</li>
+    <li>En otra terminal: python cliente.py</li>
+</ol>
+
+<h2>Como probar con curl</h2>
+
+<h3>Registro</h3>
+<p>curl -X POST http://localhost:5000/registro -H "Content-Type: application/json" -d "{\"usuario\": \"pame\", \"contraseña\": \"1234\"}"</p>
+<p>Respuesta esperada (201): {"mensaje": "Usuario registrado"}</p>
+
+<h3>Login</h3>
+<p>curl -X POST http://localhost:5000/login -H "Content-Type: application/json" -d "{\"usuario\": \"pame\", \"contraseña\": \"1234\"}"</p>
+<p>Respuesta esperada (200): {"mensaje": "Login exitoso"}</p>
+
+<h3>Ver tareas (con credenciales)</h3>
+<p>curl -u pame:1234 http://localhost:5000/tareas</p>
+<p>Respuesta esperada (200): un HTML con el texto "Bienvenido, pame".</p>
+
+<h3>Ver tareas (sin credenciales)</h3>
+<p>curl http://localhost:5000/tareas</p>
+<p>Respuesta esperada (401): "No autorizado".</p>
+
+<h2>Capturas de pantalla</h2>
+
+<p>Registro exitoso:</p>
+<img class="captura" src="capturas/registro_exitoso.png" alt="Registro exitoso">
+
+<p>Login exitoso:</p>
+<img class="captura" src="capturas/login_exitoso.png" alt="Login exitoso">
+
+<p>Login fallido (usuario incorrecto):</p>
+<img class="captura" src="capturas/login_fallido_usuario_incorrecto.png" alt="Login fallido por usuario incorrecto">
+
+<p>Login fallido (contraseña incorrecta):</p>
+<img class="captura" src="capturas/login_fallido_contrasena_incorrecta.png" alt="Login fallido por contraseña incorrecta">
+
+<p>
+    En los dos casos el servidor responde con el mismo mensaje generico,
+    sin aclarar cual de los dos datos estaba mal. Es una medida de
+    seguridad para no revelar q nombres de usuario existen en el sistema.
+</p>
+
+<p>Tareas con credenciales:</p>
+<img class="captura" src="capturas/tareas_con_credenciales.png" alt="Tareas con credenciales">
+
+<p>Tareas sin credenciales:</p>
+<img class="captura" src="capturas/tareas_sin_credenciales.png" alt="Tareas sin credenciales">
+
+<h2>Preguntas conceptuales</h2>
+
+<h3>Por que hashear contraseñas?</h3>
+<p>
+    Porq si alguien accede a la base de datos sin permiso, las contraseñas
+    no qdan expuestas en texto plano. El hash es una transformaci on q no
+    se puede revertir: aunq se vea el valor guardado, no se puede saber
+    cual era la contraseña original. Al hacer login no se compara la
+    contraseña real, sino que se vuelve a calcular el hash de lo q escribió
+    el usuario y se compara contra el hash guardado.
+</p>
+
+<h3>Ventajas de usar SQLite en este proyecto</h3>
+<p>
+    La ventaja es que con SQLite no se necesita instalar ni configurar un
+    servidor de base de datos aparte: todo queda guardado en un solo archivo
+    (tareas.db) dentro del proyecto, lo que lo hace simple para un proyecto
+    chico como este. Ademas viene incluido en la libreria Python, asi q no
+    es necesario instalar nada.
+</p>
+
+<h2>Nota sobre GitHub Pages</h2>
+<p>
+    GitHub Pages solo aloja archivos estaticos (HTML, CSS, JS); no puede
+    ejecutar un servidor Flask ni codigo Python. Por eso esta pagina tiene
+    solo la documentacion, mientras que la API real (servidor.py) se tiene
+    que ejecutar localmente en la propia computadora, siguiendo los pasos
+    de la seccion "Como ejecutar".
+</p>
+
+</body>
+</html>
